@@ -8,8 +8,8 @@ import {
   configureFetchDataWithRequestSuccess
 } from './configure'
 import Bar from './Bar'
-import { DataContext } from './DataContext'
-import Foos from './Foos'
+import DataContext from '../DataContext'
+import Foos from './StateFoos'
 
 describe('useData with Foos basic usage', () => {
 
@@ -32,6 +32,7 @@ describe('useData with Foos basic usage', () => {
     describe('request with success', () => {
       it.only('should render test component whith foo items', done => {
         // when
+        // const store = configureTestStore()
         configureFetchDataWithRequestSuccess()
 
         // then
@@ -50,14 +51,11 @@ describe('useData with Foos basic usage', () => {
         // when
         // const store = configureTestStore()
         configureFetchDataWithRequestFail()
-        const config = {
-          apiPath: '/foos'
-        }
 
         // then
         act(() => {
           mount(
-            <DataContext.Provider config={config}>
+            <DataContext.Provider>
               <Foos onFailUpdateCallback={done} />
             </DataContext.Provider>
           )
@@ -70,15 +68,13 @@ describe('useData with Foos basic usage', () => {
     describe('request with success', () => {
       it('trigger success in other component than the one that did request', done => {
         // when
+        // const store = configureTestStore()
         configureFetchDataWithRequestSuccess()
-        const config = {
-          apiPath: '/foos'
-        }
 
         // then
         act(() => {
           mount(
-            <DataContext.Provider config={config}>
+            <DataContext.Provider>
               <Foos />
               <Bar onSuccessUpdateCallback={done} />
             </DataContext.Provider>

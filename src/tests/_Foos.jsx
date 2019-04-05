@@ -2,13 +2,12 @@ import PropTypes from 'prop-types'
 import React, { Fragment, useContext } from 'react'
 
 import { DataContext } from './DataContext'
-import { requestData } from '../actionCreators'
 
 const Foos = props => {
   const { onSuccessUpdateCallback } = props
-  const { data, dispatch } = useContext(DataContext)
+  const { data, requestDataEffect } = useContext(DataContext)
   const { foos } = data || {}
-  dispatch(requestData({ apiPath: '/foos' }))
+  requestDataEffect({ apiPath: '/foos' })
 
   if (foos && foos.length === 2) {
     onSuccessUpdateCallback()

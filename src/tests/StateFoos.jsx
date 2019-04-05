@@ -2,17 +2,20 @@ import PropTypes from 'prop-types'
 import React, { Fragment, useContext } from 'react'
 
 import { DataContext } from './DataContext'
-import { requestData } from '../actionCreators'
 
 const Foos = props => {
-  const { onSuccessUpdateCallback } = props
-  const { data, dispatch } = useContext(DataContext)
+  const { onFailUpdateCallback, onSuccessUpdateCallback } = props
+  const { data, requestData } = useContext(DataContext)
   const { foos } = data || {}
-  dispatch(requestData({ apiPath: '/foos' }))
 
   if (foos && foos.length === 2) {
     onSuccessUpdateCallback()
   }
+
+  requestData({
+    apiPath: '/foos',
+    handleFail: () => onFailUpdateCallback(),
+  })
   return (
     <Fragment>
       {(foos || []).map(foo => (
@@ -25,10 +28,12 @@ const Foos = props => {
 }
 
 Foos.defaultProps = {
+  onFailUpdateCallback: () => {},
   onSuccessUpdateCallback: () => {}
 }
 
 Foos.propTypes = {
+  onFailUpdateCallback: PropTypes.func,
   onSuccessUpdateCallback: PropTypes.func
 }
 

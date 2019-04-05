@@ -1,7 +1,7 @@
 // from https://www.codementor.io/sambhavgore/an-example-use-context-and-hooks-to-share-state-between-different-components-sgop6lnrd
 // https://medium.com/@jaryd_34198/seamless-api-requests-with-react-hooks-part-1-7531849d8381
 import PropTypes from "prop-types"
-import React, { createContext, useEffect, useReducer, useState } from "react"
+import React, { createContext, useEffect, useReducer } from "react"
 
 import { dataEffect } from './dataEffect'
 import { createDataReducer } from './createDataReducer'
@@ -15,27 +15,15 @@ export const createDataContext = (extraConfig={}) => {
   const dataReducer = createDataReducer(initialState)
 
   const Provider = props => {
-    const { children } = props
-    const [hasAlreadyRequested, setHasAlreadyRequested] = useState(false)
-
+    const { children, config } = props
     const reducer = useReducer(dataReducer, initialState)
-    const [data, _dispatch] = reducer
+    const [data, dispatch] = reducer
 
-    function dispatch (action) {
-      if (/REQUEST_DATA_(DELETE|GET|POST|PUT|PATCH)_(.*)/.test(action.type)) {
-        if (!hasAlreadyRequested) {
-          setHasAlreadyRequested(true)
-          useEffect(() => {}, [hasAlreadyRequested])
-        } else {
-          useEffect(() => {
-            _dispatch(action)
-            const effectConfig = getConfigWithDefaultValues(
-              Object.assign({}, extraConfig, action.config)
-            )
-            dataEffect(reducer, effectConfig)
-          }, [hasAlreadyRequested])
-        }
-      }
+    if (config) {
+      const effectConfig = getConfigWithDefaultValues(
+        Object.assign({}, extraConfig, config)
+      )
+      useEffect(() => { dataEffect(reducer, effectConfig) }, [dispatch])
     }
 
     const value = {
@@ -51,11 +39,13 @@ export const createDataContext = (extraConfig={}) => {
   }
 
   Provider.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
+    config: PropTypes.shape()
   }
 
   Provider.defaultProps = {
-    children: null
+    children: null,
+    config: null
   }
 
   Context.Provider = Provider

@@ -1,10 +1,10 @@
-import { failData, successData } from './actionCreators'
 import { fetchData } from './fetchData'
+import { getUpdatedState } from './getUpdatedState'
 import { getUrlFromConfig } from './getUrlFromConfig'
 import { isSuccessStatus } from './status'
 
-export const createDataEffect = (reducer, config) => {
-  const [data, dispatch] = reducer
+export const createDataEffect = (state, config) => {
+  const [data, setData] = state
   const { handleFail, handleSuccess } = config
 
   async function dataEffect() {
@@ -27,7 +27,8 @@ export const createDataEffect = (reducer, config) => {
       const isSuccess = isSuccessStatus(status)
 
       if (isSuccess) {
-        dispatch(successData(action, config))
+        const updatedState = getUpdatedState(data, action)
+        setData(updatedState)
 
         if (handleSuccess) {
           handleSuccess(data, action)
@@ -37,13 +38,9 @@ export const createDataEffect = (reducer, config) => {
       }
 
       if (payload.errors) {
-
-        dispatch(failData(payload, config))
-
         if (handleFail) {
-          handleFail(data, action)
+          handleSuccess(data, action)
         }
-
         throw Error(payload.errors)
       }
 
@@ -57,10 +54,8 @@ export const createDataEffect = (reducer, config) => {
           data: [String(error)],
         },
       ]
-      dispatch(failData({ payload: { errors } }, config))
-
-      handleFail(data, { config, payload: { errors } })
-
+      const action = { payload: errors }
+      handleSuccess(data, action)
       throw Error(errors)
     }
   }

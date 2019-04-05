@@ -4,11 +4,11 @@ export function configureFetchDataWithRequestFail () {
   ), { status: 400 })
 }
 
+export const successFoos = [
+  { id: "AE", text: "My foo is here", type: "good" },
+  { id: "BF", test: "My other foo also", type: "bad" }
+]
+
 export function configureFetchDataWithRequestSuccess () {
-  fetch.mockResponse(JSON.stringify(
-    [
-      { text: "My foo is here" },
-      { test: "My other foo also" }
-    ],
-  ), { status: 200 })
+  fetch.mockResponse(JSON.stringify(successFoos), { status: 200 })
 }

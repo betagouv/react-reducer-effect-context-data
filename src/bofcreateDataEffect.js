@@ -1,13 +1,17 @@
+import { useReducer } from 'react'
+
 import { failData, successData } from './actionCreators'
 import { fetchData } from './fetchData'
 import { getUrlFromConfig } from './getUrlFromConfig'
 import { isSuccessStatus } from './status'
 
-export const createDataEffect = (reducer, config) => {
-  const [data, dispatch] = reducer
+export const createDataEffect = (dataReducer, config) => {
   const { handleFail, handleSuccess } = config
 
+  const [data, dispatch] = useReducer(dataReducer, initialState)
+
   async function dataEffect() {
+
     const url = getUrlFromConfig(config)
 
     const fetchDataMethod = config.fetchData || fetchData
